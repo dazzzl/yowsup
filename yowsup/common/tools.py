@@ -162,21 +162,34 @@ class MimeTools:
             raise Exception("Unsupported/unrecognized file type for: "+filepath);
         return mimeType
 
-class VideoTools:
     @staticmethod
-    def getVideoProperties(videoFile):
-        with FFVideoOptionalModule() as imp:
-            VideoStream = imp("VideoStream")
-            s = VideoStream(videoFile)
-            return s.width, s.height, s.bitrate, s.duration #, s.codec_name
+    def getExtension(mimetype):
+        ext = mimetypes.guess_extension(mimetype)
+        if ext is None:
+            raise Exception("Unsupported/unrecognized mimetype: "+mimetype);
+        return ext
 
-    @staticmethod
-    def generatePreviewFromVideo(videoFile):
-        with FFVideoOptionalModule() as imp:
-            VideoStream = imp("VideoStream")
-            fd, path = tempfile.mkstemp('.jpg')
-            stream = VideoStream(videoFile)
-            stream.get_frame_at_sec(0).image().save(path)
-            preview = ImageTools.generatePreviewFromImage(path)
-            os.remove(path)
-            return preview
+
+class VideoTools:
+	
+	@staticmethod
+	def getVideoProperties(videoFile):
+		if ModuleTools.INSTALLED_FFVIDEO():
+			from ffvideo import VideoStream
+			s = VideoStream(videoFile)
+			return s.width, s.height, s.bitrate, s.duration #, s.codec_name
+		else:
+			logger.warn("Python ffvideo library not installed")
+
+	@staticmethod
+	def generatePreviewFromVideo(videoFile):
+		if ModuleTools.INSTALLED_FFVIDEO():
+			from ffvideo import VideoStream
+			fd, path = tempfile.mkstemp('.jpg')
+			stream = VideoStream(videoFile)
+			stream.get_frame_at_sec(0).image().save(path)
+			preview = ImageTools.generatePreviewFromImage(path)
+			os.remove(path)
+			return preview		
+		else:
+			logger.warn("Python ffvideo library not installed")
