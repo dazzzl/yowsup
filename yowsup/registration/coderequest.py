@@ -32,9 +32,9 @@ class WACodeRequest(WARequest):
         self.addParam("copiedrc", "1")
         self.addParam("hasinrc", "1")
         self.addParam("rcmatch", "1")
-        self.addParam("pid", int(random.uniform(100,9999)))
+        self.addParam("pid", os.getpid())
         self.addParam("rchash", hashlib.sha256(os.urandom(20)).hexdigest())
-        self.addParam("anhash", os.urandom(20))
+        self.addParam("anhash", hashlib.md5(os.urandom(20)).hexdigest())
         self.addParam("extexist", "1")
         self.addParam("extstate", "1")
 
