@@ -20,13 +20,19 @@ class YowContactsIqProtocolLayer(YowProtocolLayer):
                 self.toUpper(AddContactNotificationProtocolEntity.fromProtocolTreeNode(node))
             elif node.getChild("update"):
                 self.toUpper(UpdateContactNotificationProtocolEntity.fromProtocolTreeNode(node))
+            elif node.getChild("sync"):
+                self.toUpper(ContactsSyncNotificationProtocolEntity.fromProtocolTreeNode(node))
             else:
                 self.raiseErrorForNode(node)
 
     def recvIq(self, node):
         if node["type"] == "result" and node.getChild("sync"):
             self.toUpper(ResultSyncIqProtocolEntity.fromProtocolTreeNode(node))
+        elif node["type"] == "result" and node.getChild("status"):
+            self.toUpper(ResultStatusesIqProtocolEntity.fromProtocolTreeNode(node))
 
     def sendIq(self, entity):
         if entity.getXmlns() == "urn:xmpp:whatsapp:sync":
+            self.toLower(entity.toProtocolTreeNode())
+        elif entity.getXmlns() == GetStatusesIqProtocolEntity.XMLNS:
             self.toLower(entity.toProtocolTreeNode())
