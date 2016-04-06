@@ -551,6 +551,7 @@ class YowAxolotlLayer(YowProtocolLayer):
         image_message.file_sha256 = mediaNode["filehash"]
         image_message.file_length = int(mediaNode["size"])
         image_message.caption = mediaNode["caption"] or ""
+	image_message.media_key = mediaNode["media_key"]
         image_message.jpeg_thumbnail = mediaNode.getData()
 
         m.image_message.MergeFrom(image_message)
